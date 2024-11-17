@@ -47,7 +47,7 @@ function listDriveActivity() {
         "行ったアクション: " +
         action +
         "\n" +
-        "対象: " +
+        "対象:" +
         targets +
         "\n\n";
     }
@@ -150,7 +150,7 @@ function getActorInfo(actor) {
 function getTargetInfo(target) {
   if ("driveItem" in target) {
     const title = target.driveItem.title || "unknown";
-    return 'driveItem:"' + title + '"';
+    return "\n" + 'driveItem:"' + title + '"';
   }
   if ("drive" in target) {
     const title = target.drive.title || "unknown";
