@@ -41,16 +41,13 @@ function listDriveActivity() {
       // アクティビティの時間、アクター、アクション、ターゲットを出力します。
       console.log("%s: %s, %s, %s", time, actors, action, targets);
       responseMessage +=
-        "変更時間 " +
-        time +
-        "\n" +
-        "変更したユーザー " +
+        "変更したユーザー: " +
         actors +
         "\n" +
-        "行ったアクション " +
+        "行ったアクション: " +
         action +
         "\n" +
-        "対象 " +
+        "対象: " +
         targets +
         "\n\n";
     }
@@ -130,7 +127,7 @@ function getUserInfo(user) {
   if ("knownUser" in user) {
     const knownUser = user.knownUser;
     const isMe = knownUser.isCurrentUser || false;
-    return isMe ? "people/me" : knownUser.personName;
+    return isMe ? "Admin" : knownUser.personName;
   }
   return getOneOf(user);
 }
