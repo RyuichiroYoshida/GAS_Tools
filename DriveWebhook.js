@@ -2,16 +2,21 @@
  * DriveActivityAPIを使用してGoogle Driveのアクティビティを取得し、最大10件のアクティビティをログに出力
  */
 function listDriveActivity() {
+  // 環境変数からrootFolderIdを取得
   const rootFolderId =
     PropertiesService.getScriptProperties().getProperty("ROOT_FOLDER_ID");
 
+  // 直前10分のアクティビティを取得するための時間を設定
   var since = new Date();
   since.setMinutes(since.getMinutes() - 10);
   since = since.getTime().toString();
 
   const request = {
+    // アクティビティの取得範囲を指定 (直前10件サーチ)
     pageSize: 10,
+    // アクティビティを取得するフォルダのIDを指定 (items/フォルダID)
     ancestorName: "items/" + rootFolderId,
+    // アクティビティの取得範囲を指定 (since: 直前10分)
     filter: since ? `time > ${since}` : "",
     consolidationStrategy: { legacy: {} },
   };
@@ -66,6 +71,7 @@ function postToDiscordWebhook(message, folderId) {
   const url = PropertiesService.getScriptProperties().getProperty(
     "DISCORD_WEBHOOK_URL"
   );
+  // フォルダのURLと名前を取得
   let driveLink = DriveApp.getFolderById(folderId).getUrl();
   let driveName = DriveApp.getFolderById(folderId).getName();
 
