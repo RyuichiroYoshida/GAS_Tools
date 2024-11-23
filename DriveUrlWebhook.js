@@ -1,6 +1,12 @@
+function test() {
+  aes = encoding();
+  console.log(aes);
+}
+
 function doGet(e) {
-  encoding(e.parameter.folderId);
-  console.log(encryptedMessage);
+  folderId = decoding(e.parameter.id);
+
+  postToDiscordWebhook(folderId);
 }
 
 /**
