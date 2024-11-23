@@ -1,9 +1,35 @@
 function doGet(e) {
   encoding(e.parameter.folderId);
   console.log(encryptedMessage);
+}
 
-  // TODO フォルダIDからフォルダのURLを取得する
-  // TODO フォルダのURLを Discord Webhookに送信する
+/**
+ * Google Drive 更新通知をDiscordに送信
+ * @param {Discord送信メッセージ} message
+ */
+function postToDiscordWebhook(folderId) {
+  const url = PropertiesService.getScriptProperties().getProperty(
+    "DISCORD_WEBHOOK_URL"
+  );
+  // フォルダのURLと名前を取得
+  let driveLink = DriveApp.getFolderById(folderId).getUrl();
+  let driveName = DriveApp.getFolderById(folderId).getName();
+
+  UrlFetchApp.fetch(url, {
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify({
+      content: "Google Drive 変更通知",
+      embeds: [
+        {
+          title: driveName,
+          url: driveLink,
+          description: "ビルドファイルが更新されました",
+          color: 5620992,
+        },
+      ],
+    }),
+  });
 }
 
 function checkString(line) {
