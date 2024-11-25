@@ -1,7 +1,8 @@
 function doGet(e) {
-  folderId = decoding(e.parameter.id);
+  let param = e.parameter.folder;
+  param = param.replace(/ /g, "+");
 
-  postToDiscordWebhook(folderId);
+  postToDiscordWebhook(decoding(param));
 }
 
 /**
@@ -13,8 +14,9 @@ function postToDiscordWebhook(folderId) {
     "DISCORD_WEBHOOK_URL"
   );
   // フォルダのURLと名前を取得
-  let driveLink = DriveApp.getFolderById(folderId).getUrl();
-  let driveName = DriveApp.getFolderById(folderId).getName();
+  let folder = DriveApp.getFolderById(folderId);
+  let driveName = folder.getName();
+  let driveUrl = folder.getUrl();
 
   UrlFetchApp.fetch(url, {
     method: "post",
@@ -24,7 +26,7 @@ function postToDiscordWebhook(folderId) {
       embeds: [
         {
           title: driveName,
-          url: driveLink,
+          url: driveUrl,
           description: "ビルドファイルが更新されました",
           color: 5620992,
         },
