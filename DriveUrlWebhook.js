@@ -1,8 +1,3 @@
-function test() {
-  aes = encoding();
-  console.log(aes);
-}
-
 function doGet(e) {
   folderId = decoding(e.parameter.id);
 
@@ -48,12 +43,11 @@ function checkString(line) {
 
 function encoding(line) {
   try {
+    let key = PropertiesService.getScriptProperties().getProperty("AES_KEY");
+
     if (checkString(line) == true) {
-      let cipher = new cCryptoGS.Cipher(line, "key");
-      let encryptedMessage = cipher.encrypt(
-        "this is my message to be encrypted"
-      );
-      console.log(encryptedMessage);
+      let cipher = new cCryptoGS.Cipher(key, "aes");
+      return cipher.encrypt(line);
     } else {
       throw new Error("引数が文字列ではありません");
     }
@@ -64,9 +58,11 @@ function encoding(line) {
 
 function decoding(line) {
   try {
+    let key = PropertiesService.getScriptProperties().getProperty("AES_KEY");
+
     if (checkString(line) == true) {
-      let decryptedMessage = cipher.decrypt(line);
-      console.log(decryptedMessage);
+      let cipher = new cCryptoGS.Cipher(key, "aes");
+      return cipher.decrypt(line);
     } else {
       throw new Error("引数が文字列ではありません");
     }
