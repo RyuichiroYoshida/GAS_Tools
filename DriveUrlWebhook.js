@@ -1,18 +1,25 @@
 function doGet(e) {
+  // パラメーターから暗号化されたフォルダIDを取得
   let param = e.parameter.folder;
+  // httpリクエスト内で+がスペースに変換されるため、スペースを+に変換
   param = param.replace(/ /g, "+");
-
-  postToDiscordWebhook(decoding(param));
+  // どのチームのWebhookに送信するか取得
+  let team = e.parameter.team;
+  postToDiscordWebhook(decoding(param), team);
 }
 
 /**
  * Google Drive 更新通知をDiscordに送信
  * @param {Discord送信メッセージ} message
  */
-function postToDiscordWebhook(folderId) {
-  const url = PropertiesService.getScriptProperties().getProperty(
-    "DISCORD_WEBHOOK_URL"
-  );
+function postToDiscordWebhook(folderId, propertyName) {
+  // Webhook URLを取得
+  if (propertyName == null || checkString(propertyName) == false) {
+    console.error("Webhook URLが設定されていません");
+    return;
+  }
+
+  const url = PropertiesService.getScriptProperties().getProperty(propertyName);
   // フォルダのURLと名前を取得
   let folder = DriveApp.getFolderById(folderId);
   let driveName = folder.getName();
