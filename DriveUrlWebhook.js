@@ -1,7 +1,6 @@
 function doGet(e) {
-  let userAgent = e.headers["User-Agent"];
-  let client = e.headers["X-Forwarded-For"];
-  console.log("User-Agent: " + userAgent +"\n"+ "Client: " + client);
+  let userAgent = HtmlService.getUserAgent();
+  console.log("User-Agent: " + userAgent);
 
   // パラメーターから暗号化されたフォルダIDを取得
   let param = e.parameter.folder;
