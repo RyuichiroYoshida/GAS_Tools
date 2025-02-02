@@ -1,15 +1,17 @@
 const user = {
-    id: 0,
+    userid: 0,
     name: "",
     password: "",
-    score: 0,
 };
 
-const ranking = {};
+const ranking = {
+  userid: 0,
+  score: 0,
+};
 
 const musicData = ["music1"];
 
-const id = "";
+const id = "1zw5mVigLKu0TQhjDJ9lmbxSetSuyodEikY5x6Y0aufs";
 
 function doGet(e) {
     switch (e.parameter.mode) {
@@ -20,12 +22,28 @@ function doGet(e) {
 
 function doPost(e) {
     const sheet = SpreadsheetApp.openById(id).getSheetByName("User");
-
     const rows = sheet.getDataRange().getValues();
 
-    const id = e.parameter.address;
-    const name = e.parameter.name;
-    const score = e.parameter.score;
+    switch (e.parameter.mode) {
+        case "user":
+            const id = e.parameter.address;
+            const name = e.parameter.name;
+            const score = e.parameter.score;
+            switch (e.parameter.route) {
+                case "update":
+                    return updateRecord(id, name, score);
+                case "signUp":
+                    return signUp(name, password);
+                case "signIn":
+                    return signIn(userId, name, password);
+                default:
+                    return false;
+            }
+        case "ranking":
+            return getRecordsAsJson();
+        default:
+            return false;
+    }
 
     var index = 0;
     for (var i = 1; i < rows.length; i++) {
@@ -79,9 +97,10 @@ function signUp(name, password) {
     const sheet = SpreadsheetApp.openById(id).getSheetByName("User");
     const rows = sheet.getDataRange().getValues();
 
+    var index = 0;
     for (var i = 1; i < rows.length; i++) {
-        if (rows[i][1] == name) {
-            return false;
+        if (rows[i][0] == id) {
+            index = i + 1;
         }
     }
 
@@ -89,9 +108,9 @@ function signUp(name, password) {
     const created = nowDate;
     const updated = nowDate;
     const uuid = Utilities.getUuid();
-    sheet.appendRow([uuid, name, password, 0, created, updated]);
+    sheet.appendRow([uuid, name, password, created, updated]);
 
-    return true;
+    return uuid;
 }
 
 function signIn(userId, name, password) {
