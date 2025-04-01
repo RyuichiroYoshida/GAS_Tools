@@ -1,31 +1,31 @@
-function main() {
-  // テスト用のフォルダID（本番環境では環境変数などから取得するべき）
-  let folderId = "12Y7fCgWIg5o1vp2ooSwZt3OXqaUbXtR3";
+function doGet(e) {
+  // 環境変数からフォルダIDを取得
+  const folderId = PropertiesService.getScriptProperties().getProperty("FOLDER_ID");
 
-  zipAndDownload(folderId);
+  let res = zipAndDownload(folderId);
 
-  //   let files = DriveApp.getFolderById(folderId).getFiles();
-
-  //   console.log(files.hasNext());
-  //   while (files.hasNext()) {
-  //     var file = files.next();
-  //     console.log("File Name: " + file.getName());
-  //     console.log("File ID: " + file.getId());
-  //     console.log("File URL: " + file.getUrl());
-  //   }
+  // ContentService を使用して文字列を返す
+  return ContentService.createTextOutput(res).setMimeType(ContentService.MimeType.TEXT);
 }
 
-function zipAndDownload(folderId) {
-  var folder = DriveApp.getFolderById(folderId);
-  var folderName = folder.getName();
+/**
+ * 指定されたGoogleドライブフォルダ内のすべてのファイルを含むZIPファイルを作成します。
+ * フォルダと同じ名前のZIPファイルが既に存在する場合、それは削除されます。
+ *
+ * @param {string} folderId - ZIP化するGoogleドライブフォルダのID。
+ * @returns {string|null} 作成されたZIPファイルのURL、またはフォルダが空の場合はnull。
+ */
+function createZip(folderId) {
+  let folder = DriveApp.getFolderById(folderId);
+  let folderName = folder.getName();
 
-  var files = folder.getFiles();
-  var blobs = [];
+  let files = folder.getFiles();
+  let blobs = [];
 
   // フォルダ内のすべてのファイルを取得し、Blob の配列を作成
   while (files.hasNext()) {
-    var file = files.next();
-    if (file.getName() === folderName) {
+    let file = files.next();
+    if (file.getName() == folderName + ".zip") {
       // 前回実行時の ZIP ファイルを削除
       file.setTrashed(true);
       continue;
@@ -35,12 +35,14 @@ function zipAndDownload(folderId) {
 
   // Blob 配列を ZIP ファイルに圧縮
   if (blobs.length > 0) {
-    var zipBlob = Utilities.zip(blobs, folder.getName() + ".zip");
+    let zipBlob = Utilities.zip(blobs, folderName + ".zip");
 
     // ZIP ファイルをフォルダ内に作成
-    var zipFile = folder.createFile(zipBlob);
+    let zipFile = folder.createFile(zipBlob);
     console.log("ZIPファイルのURL: " + zipFile.getUrl());
+    return zipFile.getUrl();
   } else {
     console.log("フォルダ内にファイルがありません。");
+    return null;
   }
 }
