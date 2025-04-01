@@ -2,7 +2,7 @@ function doGet(e) {
   // 環境変数からフォルダIDを取得
   const folderId = PropertiesService.getScriptProperties().getProperty("FOLDER_ID");
 
-  let res = zipAndDownload(folderId);
+  let res = createZip(folderId);
 
   // ContentService を使用して文字列を返す
   return ContentService.createTextOutput(res).setMimeType(ContentService.MimeType.TEXT);
