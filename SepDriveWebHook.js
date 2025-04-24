@@ -1,8 +1,10 @@
-// // TODO: 今はグローバル領域に定義しているが、いずれは外部から取り込むかもしれない
-// const ignoreFileList = [
-//     "unknown",
-//     "Unity.zip",
-// ];
+// TODO: 今はグローバル領域に定義しているが、いずれは外部から取り込むかもしれない
+const ignoreFileList = [
+    "unknown",
+    "Unity.zip",
+    "AssetsImporterAPI",
+    "DriveWebHook",
+];
 
 /**
  * DriveActivityAPIを使用してGoogle Driveのアクティビティを取得し、最大10件のアクティビティをログに出力
@@ -34,24 +36,26 @@ function listDriveActivity() {
       console.log(response);
   
       let activities = response.activities;
-      if (!activities || activities.length === 0) {
-        console.log("アクティビティがありません。");
-      }
-
       activities = response.activities.filter(activity => {
-        const targets = activity.targets.map(getTargetInfo);
-        // 除外したい条件を指定
-        return !targets.some(target => target.includes("Unity.zip"));
+        const title = activity.primaryActionDetail?.target?.driveItem?.title;
+        ignoreFileList.some(target => {
+          if (title && title.includes(target)) {
+            console.log("除外されたアクティビティ: %s", title);
+            return true; // 除外条件に一致した場合、trueを返す
+          }
+          return false; // 除外条件に一致しない場合、falseを返す
+        }
+        );
       });
+
+      // 除外後のアクティビティを確認
+      if (!checkActivity(activities)) {
+        return;
+      }
 
       console.log("最近のアクティビティ:");
       let responseMessage = "";
       for (const activity of activities) {
-        // if (checkIgnoreFile(activity))
-        // {
-        //     console.log("無視リストに含まれているため、スキップします。");
-        //     continue;
-        // }
         // アクティビティの時間情報を取得します。
         const time = getTimeInfo(activity);
         // アクションの詳細情報を取得します。
@@ -187,16 +191,14 @@ function listDriveActivity() {
     return getOneOf(target) + ":unknown";
   }
 
-//     /**
-//      * @param {object} target ターゲットオブジェクト。
-//      * @return {boolean} ターゲットが無視リストに含まれているかどうかを返します。
-//      */
-//   function checkIgnoreFile(target) {
-//     console.log("checkIgnoreFile", target);
-//     if ("driveItem" in target) {
-//       const title = target.driveItem.title || "unknown";
-//       console.log("checkIgnoreFile title", title);
-//       return ignoreFileList.includes(title);
-//     }
-//     return false;
-//   }
+  /**
+   * @param {object} activity アクティビティオブジェクト。
+   * @return {boolean} アクティビティが存在するかどうかを返します。
+   */
+  function checkActivity(activities) {
+    if (!activities || activities.length === 0) {
+      console.log("アクティビティがありません。");
+      return false;
+    }
+    return true;
+  }
