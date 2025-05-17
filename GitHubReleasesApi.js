@@ -104,6 +104,7 @@ const GetReleases = (() => {
 				Accept: "application/vnd.github.v3+json",
 				Authorization: "token " + PropertiesService.getScriptProperties().getProperty("GITHUB_TOKEN"),
 			},
+			followRedirects: false,
 			muteHttpExceptions: true,
 		};
 		let response = UrlFetchApp.fetch(url, options);
